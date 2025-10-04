@@ -1,0 +1,34 @@
+{
+  "recommendations": [
+    // ESLint - Linting automático
+    "dbaeumer.vscode-eslint",
+
+    // Prettier - Formatação de código
+    "esbenp.prettier-vscode",
+
+    // TypeScript e React
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+
+    // Tailwind CSS
+    "bradlc.vscode-tailwindcss",
+
+    // Git e Controle de Versão
+    "eamodio.gitlens",
+
+    // Produtividade
+    "christian-kohler.npm-intellisense",
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+
+    // Themes (opcional)
+    "PKief.material-icon-theme",
+    "zhuangtongfa.Material-theme"
+  ],
+  "unwantedRecommendations": [
+    "hookyqr.beautify",
+    "ms-vscode.vscode-typescript"
+  ]
+}
