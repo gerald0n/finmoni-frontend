@@ -1,0 +1,56 @@
+import Cookies from 'js-cookie'
+
+import { API_CONFIG, COOKIE_CONFIG, STORAGE_KEYS } from '@/config/constants'
+import type { ApiError, SignUpRequest, SignUpResponse } from '@/types'
+
+class AuthServiceClass {
+    private async makeRequest<T>(endpoint: string, data: unknown): Promise<T> {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+
+        if (!response.ok) {
+            const error: ApiError = await response.json()
+            throw new Error(Array.isArray(error.message) ? error.message[0] : error.message)
+        }
+
+        return response.json()
+    }
+
+    async signUp(userData: SignUpRequest): Promise<SignUpResponse> {
+        return this.makeRequest<SignUpResponse>(API_CONFIG.ENDPOINTS.SIGN_UP, userData)
+    }
+
+    saveToken(token: string): void {
+        Cookies.set(STORAGE_KEYS.AUTH_TOKEN, token, {
+            expires: COOKIE_CONFIG.EXPIRES_DAYS,
+            path: COOKIE_CONFIG.PATH,
+            sameSite: COOKIE_CONFIG.SAME_SITE,
+            secure: window.location.protocol === 'https:',
+        })
+    }
+
+    getToken(): string | null {
+        return Cookies.get(STORAGE_KEYS.AUTH_TOKEN) || null
+    }
+
+    removeToken(): void {
+        Cookies.remove(STORAGE_KEYS.AUTH_TOKEN, { path: COOKIE_CONFIG.PATH })
+    }
+
+    isAuthenticated(): boolean {
+        return !!this.getToken()
+    }
+
+    migrateTokenFromLocalStorage(): void {
+        const oldToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
+        if (oldToken) {
+            this.saveToken(oldToken)
+            localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+        }
+    }
+}
+
+export const authService = new AuthServiceClass()
