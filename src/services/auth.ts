@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
 import { API_CONFIG, COOKIE_CONFIG, STORAGE_KEYS } from '@/config/constants'
-import type { ApiError, SignUpRequest, SignUpResponse } from '@/types'
+import type { ApiError, LoginRequest, LoginResponse, SignUpRequest, SignUpResponse } from '@/types'
 
 class AuthServiceClass {
     private async makeRequest<T>(endpoint: string, data: unknown): Promise<T> {
@@ -17,6 +17,10 @@ class AuthServiceClass {
         }
 
         return response.json()
+    }
+
+    async login(credentials: LoginRequest): Promise<LoginResponse> {
+        return this.makeRequest<LoginResponse>(API_CONFIG.ENDPOINTS.SIGN_IN, credentials)
     }
 
     async signUp(userData: SignUpRequest): Promise<SignUpResponse> {

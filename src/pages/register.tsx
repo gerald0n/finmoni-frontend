@@ -8,8 +8,8 @@ import { ErrorMessage } from '@/components/ui/error'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { LoadingSpinner } from '@/components/ui/loading'
-import { useSignUp } from '@/hooks/use-auth-signup'
-import { authSchemas, type RegisterFormData } from '@/lib/validations-register'
+import { useSignUp } from '@/hooks/use-auth'
+import { authSchemas, type RegisterFormData } from '@/lib/validations'
 
 export function RegisterPage() {
     const signUpMutation = useSignUp()
