@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { Navigate, useLocation } from 'react-router-dom'
 
 import { authService } from '@/services/auth'
+import { workspaceService } from '@/services/workspace'
 import type { RootState } from '@/store'
 
 interface ProtectedRouteProps {
@@ -21,6 +22,27 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <>{children}</>
 }
 
+interface WorkspaceProtectedRouteProps {
+    children: ReactNode
+}
+
+export function WorkspaceProtectedRoute({ children }: WorkspaceProtectedRouteProps) {
+    const location = useLocation()
+    const user = useSelector((state: RootState) => state.auth.user)
+    const selectedWorkspace = useSelector((state: RootState) => state.auth.selectedWorkspace)
+    const isAuthenticated = authService.isAuthenticated()
+
+    if (!isAuthenticated || !user) {
+        return <Navigate to="/auth/login" state={{ from: location }} replace />
+    }
+
+    if (!selectedWorkspace && !workspaceService.hasSelectedWorkspace()) {
+        return <Navigate to="/workspace-selection" replace />
+    }
+
+    return <>{children}</>
+}
+
 interface PublicRouteProps {
     children: ReactNode
 }
@@ -30,7 +52,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
     const isAuthenticated = authService.isAuthenticated()
 
     if (isAuthenticated && user) {
-        return <Navigate to="/dashboard" replace />
+        return <Navigate to="/workspace-selection" replace />
     }
 
     return <>{children}</>

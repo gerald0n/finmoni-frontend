@@ -9,6 +9,7 @@ export const API_CONFIG = {
 export const STORAGE_KEYS = {
     AUTH_TOKEN: 'auth_token',
     THEME: 'theme',
+    SELECTED_WORKSPACE: 'selected_workspace',
 } as const
 
 export const COOKIE_CONFIG = {

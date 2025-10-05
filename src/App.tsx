@@ -6,11 +6,18 @@ import { RouterProvider } from 'react-router-dom'
 import { queryClient } from '@/lib/query-client'
 import { router } from '@/router'
 import { authService } from '@/services/auth'
-import { store } from '@/store'
+import { workspaceService } from '@/services/workspace'
+import { setSelectedWorkspace, store } from '@/store'
 
 function App() {
   useEffect(() => {
     authService.migrateTokenFromLocalStorage()
+
+    // Sincronizar workspace do localStorage com Redux
+    const savedWorkspace = workspaceService.getSelectedWorkspace()
+    if (savedWorkspace) {
+      store.dispatch(setSelectedWorkspace(savedWorkspace))
+    }
   }, [])
 
   return (
