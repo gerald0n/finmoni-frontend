@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { ProtectedRoute, PublicRoute, WorkspaceProtectedRoute } from '@/components/guards/auth-guard'
 import { AuthLayout } from '@/components/layouts/auth-layout'
+import { DashboardLayout } from '@/components/layouts/dashboard-layout'
+import { BankAccountPage } from '@/pages/bank-account'
 import { DashboardPage } from '@/pages/dashboard'
 import { LoginPage } from '@/pages/login'
 import { RegisterPage } from '@/pages/register'
@@ -39,11 +41,21 @@ export const router = createBrowserRouter([
         ),
     },
     {
-        path: '/dashboard',
+        path: '/',
         element: (
             <WorkspaceProtectedRoute>
-                <DashboardPage />
+                <DashboardLayout />
             </WorkspaceProtectedRoute>
         ),
+        children: [
+            {
+                path: 'dashboard',
+                element: <DashboardPage />,
+            },
+            {
+                path: 'bank-account',
+                element: <BankAccountPage />,
+            },
+        ],
     },
 ])

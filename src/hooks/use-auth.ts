@@ -17,10 +17,13 @@ export function useLogin() {
         onSuccess: (data, variables) => {
             try {
                 authService.saveToken(data.accessToken)
+                
+                // Extrair dados reais do JWT
+                const tokenData = authService.decodeToken()
                 dispatch(loginAction({
-                    id: 'temp-id',
-                    name: 'Usuário',
-                    email: variables.email,
+                    id: tokenData?.sub || 'unknown-id',
+                    name: tokenData?.name || 'Usuário',
+                    email: tokenData?.email || variables.email,
                 }))
 
                 // Sempre direcionar para workspace selection após login

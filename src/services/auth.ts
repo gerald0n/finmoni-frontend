@@ -48,6 +48,27 @@ class AuthServiceClass {
         return !!this.getToken()
     }
 
+    // Decodificar JWT para extrair dados do usuário
+    decodeToken(): { sub: string; email: string; name?: string } | null {
+        const token = this.getToken()
+        if (!token) return null
+
+        try {
+            // Decodificar JWT (assumindo formato padrão)
+            const parts = token.split('.')
+            if (parts.length !== 3 || !parts[1]) return null
+            
+            const payload = JSON.parse(atob(parts[1]))
+            return {
+                sub: payload.sub || payload.userId || payload.id,
+                email: payload.email || payload.username,
+                name: payload.name || payload.username || 'Usuário'
+            }
+        } catch {
+            return null
+        }
+    }
+
     migrateTokenFromLocalStorage(): void {
         const oldToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN)
         if (oldToken) {

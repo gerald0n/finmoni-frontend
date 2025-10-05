@@ -6,12 +6,14 @@ interface AuthState {
     isAuthenticated: boolean
     user: User | null
     selectedWorkspace: Workspace | null
+    isInitialized: boolean
 }
 
 const initialState: AuthState = {
     isAuthenticated: false,
     user: null,
     selectedWorkspace: null,
+    isInitialized: false,
 }
 
 const authSlice = createSlice({
@@ -21,11 +23,20 @@ const authSlice = createSlice({
         login: (state, action: PayloadAction<User>) => {
             state.isAuthenticated = true
             state.user = action.payload
+            state.isInitialized = true
         },
         logout: (state) => {
             state.isAuthenticated = false
             state.user = null
             state.selectedWorkspace = null
+            state.isInitialized = true
+        },
+        initializeAuth: (state, action: PayloadAction<{ user: User | null; workspace: Workspace | null }>) => {
+            const { user, workspace } = action.payload
+            state.isAuthenticated = !!user
+            state.user = user
+            state.selectedWorkspace = workspace
+            state.isInitialized = true
         },
         updateUser: (state, action: PayloadAction<Partial<User>>) => {
             if (state.user) {
@@ -41,5 +52,5 @@ const authSlice = createSlice({
     },
 })
 
-export const { login, logout, updateUser, setSelectedWorkspace, clearSelectedWorkspace } = authSlice.actions
+export const { login, logout, updateUser, setSelectedWorkspace, clearSelectedWorkspace, initializeAuth } = authSlice.actions
 export default authSlice.reducer
