@@ -134,14 +134,38 @@ class WorkspaceServiceClass {
     }
 
     // Salvar workspace selecionado localmente (mantido para persistência)
-    saveSelectedWorkspace(workspace: Workspace): void {
-        localStorage.setItem(STORAGE_KEYS.SELECTED_WORKSPACE, JSON.stringify(workspace))
+    saveSelectedWorkspace(workspace: Workspace, userId?: string): void {
+        const workspaceData = {
+            ...workspace,
+            _savedByUserId: userId // Adicionar ID do usuário que salvou
+        }
+        localStorage.setItem(STORAGE_KEYS.SELECTED_WORKSPACE, JSON.stringify(workspaceData))
     }
 
     // Obter workspace selecionado do localStorage
-    getSelectedWorkspace(): Workspace | null {
-        const workspace = localStorage.getItem(STORAGE_KEYS.SELECTED_WORKSPACE)
-        return workspace ? JSON.parse(workspace) : null
+    getSelectedWorkspace(currentUserId?: string): Workspace | null {
+        const workspaceString = localStorage.getItem(STORAGE_KEYS.SELECTED_WORKSPACE)
+        if (!workspaceString) return null
+
+        try {
+            const workspaceData = JSON.parse(workspaceString)
+            
+            // Se foi especificado um usuário atual, verificar se o workspace foi salvo por ele
+            if (currentUserId && workspaceData._savedByUserId && workspaceData._savedByUserId !== currentUserId) {
+                // Workspace foi salvo por outro usuário, remover
+                this.removeSelectedWorkspace()
+                return null
+            }
+            
+            // Remover o campo auxiliar antes de retornar
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { _savedByUserId, ...workspace } = workspaceData
+            return workspace
+        } catch {
+            // Dados corrompidos, limpar
+            this.removeSelectedWorkspace()
+            return null
+        }
     }
 
     // Remover workspace selecionado do localStorage

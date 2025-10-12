@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -53,11 +53,20 @@ export function useSignUp() {
 export function useLogout() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const queryClient = useQueryClient()
 
     return useCallback(() => {
+        // Limpar tokens e workspace selecionado
         authService.removeToken()
         workspaceService.removeSelectedWorkspace()
+        
+        // Limpar estado do Redux
         dispatch(logoutAction())
+        
+        // Limpar TODOS os dados em cache do React Query
+        queryClient.clear()
+        
+        // Navegar para login
         navigate('/auth/login', { replace: true })
-    }, [navigate, dispatch])
+    }, [navigate, dispatch, queryClient])
 }

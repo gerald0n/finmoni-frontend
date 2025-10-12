@@ -2,12 +2,13 @@ import { ChevronDown, LogOut, Settings, UserPlus, Users } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
+import { InviteMemberModal } from '@/components/invite-member-modal'
+import { ThemeSelector } from '@/components/theme-selector'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useLogout } from '@/hooks/use-auth'
 import type { RootState } from '@/store'
-
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 export function DashboardHeader() {
     const navigate = useNavigate()
@@ -26,10 +27,6 @@ export function DashboardHeader() {
 
     const handleChangeWorkspace = () => {
         navigate('/workspace-selection')
-    }
-
-    const handleInviteMembers = () => {
-        // TODO: Implementar modal de convite
     }
 
     const handleWorkspaceSettings = () => {
@@ -69,10 +66,12 @@ export function DashboardHeader() {
                                 </p>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={(e) => { e.preventDefault(); handleInviteMembers() }}>
-                                <UserPlus className="mr-2 h-4 w-4" />
-                                Convidar membros
-                            </DropdownMenuItem>
+                            <InviteMemberModal>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    <UserPlus className="mr-2 h-4 w-4" />
+                                    Convidar membros
+                                </DropdownMenuItem>
+                            </InviteMemberModal>
                             <DropdownMenuItem onClick={(e) => { e.preventDefault(); handleWorkspaceSettings() }}>
                                 <Settings className="mr-2 h-4 w-4" />
                                 Configurações
@@ -103,6 +102,13 @@ export function DashboardHeader() {
                                     {user?.email}
                                 </p>
                             </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <div className="px-2 py-1">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm font-medium">Tema</span>
+                                    <ThemeSelector />
+                                </div>
+                            </div>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={logout}>
                                 <LogOut className="mr-2 h-4 w-4" />

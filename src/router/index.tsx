@@ -3,11 +3,10 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute, PublicRoute, WorkspaceProtectedRoute } from '@/components/guards/auth-guard'
 import { AuthLayout } from '@/components/layouts/auth-layout'
 import { DashboardLayout } from '@/components/layouts/dashboard-layout'
-import { BankAccountPage } from '@/pages/bank-account'
 import { DashboardPage } from '@/pages/dashboard'
 import { LoginPage } from '@/pages/login'
 import { RegisterPage } from '@/pages/register'
-import { WorkspaceSelectionPage } from '@/pages/workspace-selection'
+import WorkspaceSelectionPage from '@/pages/workspace-selection'
 
 export const router = createBrowserRouter([
     {
@@ -51,10 +50,6 @@ export const router = createBrowserRouter([
             {
                 path: 'dashboard',
                 element: <DashboardPage />,
-            },
-            {
-                path: 'bank-account',
-                element: <BankAccountPage />,
             },
         ],
     },

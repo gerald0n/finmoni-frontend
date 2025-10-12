@@ -25,11 +25,12 @@ const authSlice = createSlice({
             state.user = action.payload
             state.isInitialized = true
         },
-        logout: (state) => {
-            state.isAuthenticated = false
-            state.user = null
-            state.selectedWorkspace = null
-            state.isInitialized = true
+        logout: () => {
+            // Reset completo para o estado inicial
+            return {
+                ...initialState,
+                isInitialized: true
+            }
         },
         initializeAuth: (state, action: PayloadAction<{ user: User | null; workspace: Workspace | null }>) => {
             const { user, workspace } = action.payload

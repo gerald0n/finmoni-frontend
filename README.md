@@ -7,6 +7,10 @@ Sistema de gestão financeira pessoal desenvolvido com React, TypeScript e Vite.
 - **React 18** - Biblioteca para interfaces de usuário
 - **TypeScript** - JavaScript com tipos estáticos
 - **Vite** - Build tool e dev server ultra-rápido
+- **Redux Toolkit** - Gerenciamento de estado
+- **React Query** - Gerenciamento de dados assíncronos
+- **Tailwind CSS** - Framework CSS utilitário
+- **shadcn/ui** - Componentes de interface
 - **ESLint** - Linter para qualidade de código
 - **Prettier** - Formatador de código
 - **Husky** - Git hooks para qualidade de código
@@ -15,17 +19,19 @@ Sistema de gestão financeira pessoal desenvolvido com React, TypeScript e Vite.
 
 ```
 src/
-├── assets/          # Imagens, ícones e outros arquivos estáticos
 ├── components/      # Componentes React reutilizáveis
-│   └── ui/         # Componentes básicos de interface
-├── constants/       # Constantes da aplicação
-├── contexts/        # Contextos React
+│   ├── ui/         # Componentes básicos de interface
+│   ├── guards/     # Proteção de rotas
+│   └── layouts/    # Layouts da aplicação
+├── config/         # Configurações da aplicação
 ├── hooks/          # Custom hooks
+├── lib/            # Utilitários e configurações
 ├── pages/          # Páginas da aplicação
+├── router/         # Configuração de rotas
 ├── services/       # Serviços de API
+├── store/          # Gerenciamento de estado (Redux)
 ├── styles/         # Estilos globais
-├── types/          # Definições de tipos TypeScript
-└── utils/          # Funções utilitárias
+└── types/          # Definições de tipos TypeScript
 ```
 
 ## 🛠️ Instalação
@@ -68,20 +74,24 @@ npm run type-check
 ## 🔧 Configurações
 
 ### TypeScript
+
 - Strict mode habilitado
 - Path mapping configurado para imports mais limpos
 - Configurações otimizadas para React e Vite
 
 ### ESLint
+
 - Regras para TypeScript, React e acessibilidade
 - Integração com Prettier
 - Detecção automática de versão do React
 
 ### Prettier
+
 - Configuração padrão para formatação consistente
 - Integração com ESLint
 
 ### Husky & lint-staged
+
 - Pre-commit hooks para linting e formatação
 - Garantia de qualidade de código
 

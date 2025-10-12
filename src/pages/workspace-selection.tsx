@@ -3,10 +3,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { Plus, Users } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 
+import { PendingInvites } from '@/components/pending-invites'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorMessage } from '@/components/ui/error'
@@ -14,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { LoadingSpinner } from '@/components/ui/loading'
 import { workspaceService } from '@/services/workspace'
+import type { RootState } from '@/store'
 import { setSelectedWorkspace } from '@/store'
 import type { CreateWorkspaceRequest, Workspace } from '@/types'
 
@@ -24,9 +26,10 @@ const createWorkspaceSchema = z.object({
 
 type CreateWorkspaceFormData = z.infer<typeof createWorkspaceSchema>
 
-export function WorkspaceSelectionPage() {
+export default function WorkspaceSelection() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const currentUser = useSelector((state: RootState) => state.auth.user)
     const [showCreateForm, setShowCreateForm] = useState(false)
 
     const form = useForm<CreateWorkspaceFormData>({
@@ -40,14 +43,43 @@ export function WorkspaceSelectionPage() {
     // Query para listar workspaces
     const { data: workspaces, isLoading, error, refetch } = useQuery({
         queryKey: ['workspaces'],
-        queryFn: () => workspaceService.getWorkspaces(),
+        queryFn: async () => {
+            const allWorkspaces = await workspaceService.getWorkspaces()
+
+            // CORREÇÃO: Filtrar apenas workspaces onde o usuário é membro efetivo
+            // Problema: API pode retornar workspaces com convites pendentes
+            // Solução: Só mostrar workspaces onde currentUserRole está definido
+            return allWorkspaces.filter(workspace => {
+                // Se currentUserRole existe, usuário é membro efetivo
+                // Se não existe, pode ser apenas um convite pendente
+                return workspace.currentUserRole !== undefined
+            })
+        },
+    })
+
+    // Query para listar convites pendentes
+    const { data: pendingInvites } = useQuery({
+        queryKey: ['pending-invites'],
+        queryFn: async () => {
+            const invites = await workspaceService.getPendingInvites()
+
+            // CORREÇÃO: Filtrar apenas convites válidos e pendentes
+            return invites.filter(invite => {
+                // Verificar se está pendente e não expirado
+                const isNotExpired = !invite.expiresAt || new Date(invite.expiresAt) > new Date()
+                return invite.status === 'PENDING' && isNotExpired
+            })
+        },
     })
 
     // Mutation para criar workspace
     const createWorkspaceMutation = useMutation({
         mutationFn: (data: CreateWorkspaceRequest) => workspaceService.createWorkspace(data),
         onSuccess: (workspace) => {
-            workspaceService.saveSelectedWorkspace(workspace)
+            // Invalidar cache das queries para atualizar listas
+            refetch()
+
+            workspaceService.saveSelectedWorkspace(workspace, currentUser?.id)
             dispatch(setSelectedWorkspace(workspace))
             form.reset()
             navigate('/dashboard', { replace: true })
@@ -55,7 +87,7 @@ export function WorkspaceSelectionPage() {
     })
 
     const handleSelectWorkspace = (workspace: Workspace) => {
-        workspaceService.saveSelectedWorkspace(workspace)
+        workspaceService.saveSelectedWorkspace(workspace, currentUser?.id)
         dispatch(setSelectedWorkspace(workspace))
         navigate('/dashboard', { replace: true })
     }
@@ -102,9 +134,19 @@ export function WorkspaceSelectionPage() {
                 </CardHeader>
                 <CardContent>
                     {!showCreateForm ? (
-                        <>
+                        <div className="space-y-6">
+                            {/* Seção de convites pendentes */}
+                            {pendingInvites && pendingInvites.length > 0 && (
+                                <PendingInvites invites={pendingInvites} />
+                            )}
+
+                            {/* Seção de workspaces do usuário */}
                             {workspaces && workspaces.length > 0 ? (
                                 <div className="space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <Users className="h-5 w-5 text-primary" />
+                                        <h3 className="text-lg font-semibold">Meus Workspaces</h3>
+                                    </div>
                                     <div className="grid gap-3">
                                         {workspaces.map((workspace) => (
                                             <Card
@@ -164,7 +206,7 @@ export function WorkspaceSelectionPage() {
                                     Criar Novo Workspace
                                 </Button>
                             </div>
-                        </>
+                        </div>
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
@@ -205,7 +247,7 @@ export function WorkspaceSelectionPage() {
                                                 <FormLabel>Descrição (opcional)</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        placeholder="Controle financeiro compartilhado da família"
+                                                        placeholder="Workspace para colaboração em equipe"
                                                         {...field}
                                                     />
                                                 </FormControl>

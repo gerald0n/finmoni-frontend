@@ -17,16 +17,24 @@ export function useAuthInitialization() {
         queryFn: async () => {
             // Verificar se tem token válido
             if (!authService.isAuthenticated()) {
+                // Se não tem token, limpar qualquer dado residual
+                workspaceService.removeSelectedWorkspace()
                 return null
             }
             
             try {
                 // Extrair dados do usuário do JWT
                 const tokenData = authService.decodeToken()
-                if (!tokenData) return null
+                if (!tokenData) {
+                    // Token inválido, limpar dados
+                    authService.removeToken()
+                    workspaceService.removeSelectedWorkspace()
+                    return null
+                }
                 
-                // Recuperar workspace salvo localmente
-                const savedWorkspace = workspaceService.getSelectedWorkspace()
+                // Recuperar workspace salvo localmente APENAS se o token for válido
+                // e corresponder ao mesmo usuário (baseado no ID do usuário)
+                const validWorkspace = workspaceService.getSelectedWorkspace(tokenData.sub)
                 
                 return {
                     user: {
@@ -34,7 +42,7 @@ export function useAuthInitialization() {
                         name: tokenData.name || 'Usuário',
                         email: tokenData.email,
                     },
-                    workspace: savedWorkspace
+                    workspace: validWorkspace
                 }
             } catch {
                 // Token inválido, limpar dados
@@ -43,7 +51,7 @@ export function useAuthInitialization() {
                 return null
             }
         },
-        enabled: !isInitialized, // Só executar se não foi inicializado ainda
+        enabled: !isInitialized, // Só executar se não foi inicializado já
         retry: false, // Não tentar novamente em caso de erro
         staleTime: 0, // Sempre buscar dados frescos na inicialização
     })
