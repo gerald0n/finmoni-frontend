@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, Clock, Mail, X } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { useToast } from '@/hooks/use-toast'
 import { workspaceService } from '@/services/workspace'
 import type { WorkspaceInvite } from '@/types'
 
@@ -12,6 +15,11 @@ interface PendingInvitesProps {
 
 export function PendingInvites({ invites }: PendingInvitesProps) {
     const queryClient = useQueryClient()
+    const { toast } = useToast()
+    const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean
+        invite: WorkspaceInvite | null
+    }>({ open: false, invite: null })
 
     // Mutation para aceitar convite
     const acceptInviteMutation = useMutation({
@@ -25,10 +33,21 @@ export function PendingInvites({ invites }: PendingInvitesProps) {
 
     // Mutation para recusar convite
     const declineInviteMutation = useMutation({
-        mutationFn: (token: string) => workspaceService.declineInvite({ token }),
+        mutationFn: workspaceService.declineInvite,
         onSuccess: () => {
+            toast({
+                title: 'Convite recusado com sucesso',
+                description: 'Você não fará mais parte deste workspace.',
+            })
             // Atualizar apenas os convites pendentes
             queryClient.invalidateQueries({ queryKey: ['pending-invites'] })
+        },
+        onError: (error) => {
+            toast({
+                variant: 'destructive',
+                title: error instanceof Error ? error.message : 'Erro ao recusar convite',
+                description: 'Tente novamente em alguns instantes.',
+            })
         },
     })
 
@@ -37,9 +56,14 @@ export function PendingInvites({ invites }: PendingInvitesProps) {
     }
 
     const handleDeclineInvite = (invite: WorkspaceInvite) => {
-        if (confirm(`Tem certeza que deseja recusar o convite para ${invite.workspace?.name}?`)) {
-            declineInviteMutation.mutate(invite.token)
+        setConfirmDialog({ open: true, invite })
+    }
+
+    const confirmDeclineInvite = () => {
+        if (confirmDialog.invite) {
+            declineInviteMutation.mutate({ token: confirmDialog.invite.token })
         }
+        setConfirmDialog({ open: false, invite: null })
     }
 
     const isProcessing = () => {
@@ -132,6 +156,17 @@ export function PendingInvites({ invites }: PendingInvitesProps) {
             <div className="text-xs text-muted-foreground">
                 💡 Aceite um convite para participar do workspace ou recuse se não deseja participar.
             </div>
+
+            <ConfirmDialog
+                open={confirmDialog.open}
+                onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+                title="Recusar Convite"
+                description={`Tem certeza que deseja recusar o convite para ${confirmDialog.invite?.workspace?.name}?`}
+                confirmText="Recusar"
+                cancelText="Cancelar"
+                variant="destructive"
+                onConfirm={confirmDeclineInvite}
+            />
         </div>
     )
 }

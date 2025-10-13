@@ -32,6 +32,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/hooks/use-toast'
 import { workspaceService } from '@/services/workspace'
 import type { RootState } from '@/store'
 import type { WorkspaceRole } from '@/types'
@@ -75,6 +76,7 @@ export function InviteMemberModal({ children }: InviteMemberModalProps) {
     const [open, setOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const selectedWorkspace = useSelector((state: RootState) => state.auth.selectedWorkspace)
+    const { toast } = useToast()
 
     const form = useForm<InviteFormValues>({
         resolver: zodResolver(inviteFormSchema),
@@ -87,7 +89,11 @@ export function InviteMemberModal({ children }: InviteMemberModalProps) {
 
     const onSubmit = async (values: InviteFormValues) => {
         if (!selectedWorkspace) {
-            alert('Nenhum workspace selecionado')
+            toast({
+                variant: 'destructive',
+                title: 'Nenhum workspace selecionado',
+                description: 'Selecione um workspace antes de enviar o convite.',
+            })
             return
         }
 
@@ -99,15 +105,20 @@ export function InviteMemberModal({ children }: InviteMemberModalProps) {
                 ...(values.message && { message: values.message })
             }
             await workspaceService.inviteMember(selectedWorkspace.id, inviteData)
-            alert(`Convite enviado para ${values.email}`)
+            toast({
+                title: `Convite enviado para ${values.email}`,
+                description: 'O usuário receberá um email com o convite.',
+            })
             form.reset()
             setOpen(false)
         } catch (error) {
-            alert(
-                error instanceof Error
+            toast({
+                variant: 'destructive',
+                title: error instanceof Error
                     ? error.message
-                    : 'Erro ao enviar convite. Tente novamente.'
-            )
+                    : 'Erro ao enviar convite. Tente novamente.',
+                description: 'Verifique se o email está correto e tente novamente.',
+            })
         } finally {
             setIsLoading(false)
         }
