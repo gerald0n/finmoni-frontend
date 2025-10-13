@@ -30,7 +30,7 @@ export function DashboardHeader() {
     }
 
     const handleWorkspaceSettings = () => {
-        // TODO: Implementar configurações do workspace
+        // Funcionalidade será implementada em versão futura
     }
 
     return (
