@@ -1,13 +1,60 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>finmoni-frontend</title>
+    
+    <!-- Primary Meta Tags -->
+    <title>FinMoni - Gestão Financeira Colaborativa</title>
+    <meta name="title" content="FinMoni - Gestão Financeira Colaborativa" />
+    <meta name="description" content="Gerencie suas finanças de forma colaborativa com controle de contas bancárias, transações e relatórios em tempo real." />
+    <meta name="keywords" content="gestão financeira, controle financeiro, finanças colaborativas, contas bancárias, transações" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Portuguese" />
+    <meta name="author" content="FinMoni Team" />
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FinMoni - Gestão Financeira Colaborativa" />
+    <meta property="og:description" content="Gerencie suas finanças de forma colaborativa com controle de contas bancárias, transações e relatórios em tempo real." />
+    <meta property="og:image" content="/finmoni-og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="FinMoni - Gestão Financeira Colaborativa" />
+    <meta property="twitter:description" content="Gerencie suas finanças de forma colaborativa com controle de contas bancárias, transações e relatórios em tempo real." />
+    <meta property="twitter:image" content="/finmoni-og-image.png" />
+
+    <!-- Theme -->
+    <meta name="color-scheme" content="light dark" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

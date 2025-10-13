@@ -12,3 +12,9 @@ createRoot(rootElement).render(
     <App />
   </StrictMode>,
 )
+
+// Performance monitoring
+if (import.meta.env.PROD && import.meta.env.DEV) {
+  // eslint-disable-next-line no-console
+  console.log('FinMoni App initialized')
+}
