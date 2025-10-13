@@ -1,4 +1,4 @@
-import { Home, Settings } from 'lucide-react'
+import { CreditCard, Home, Settings } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,12 @@ const sidebarItems = [
         icon: Home,
         href: '/dashboard',
         description: 'Página principal'
+    },
+    {
+        title: 'Contas Bancárias',
+        icon: CreditCard,
+        href: '/bank-accounts',
+        description: 'Gerencie suas contas'
     },
 ]
 
@@ -66,9 +72,8 @@ export function DashboardSidebar() {
                         variant="ghost"
                         size="sm"
                         className="w-full justify-start gap-3 text-muted-foreground"
-                        onClick={() => {
-                            // TODO: Implementar configurações do sistema
-                        }}
+                        disabled
+                        title="Em desenvolvimento"
                     >
                         <Settings className="h-4 w-4" />
                         Configurações
