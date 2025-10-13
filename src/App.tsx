@@ -2,7 +2,9 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
 
+import { ErrorBoundary } from '@/components/error-boundary'
 import { LoadingSpinner } from '@/components/ui/loading'
+import { Toaster } from '@/components/ui/toaster'
 import { useAuthInitialization } from '@/hooks/use-auth-initialization'
 import { queryClient } from '@/lib/query-client'
 import { router } from '@/router'
@@ -25,11 +27,14 @@ function AppContent() {
 
 function App() {
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <AppContent />
+          <Toaster />
+        </QueryClientProvider>
+      </Provider>
+    </ErrorBoundary>
   )
 }
 
