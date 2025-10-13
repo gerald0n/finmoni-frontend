@@ -122,3 +122,37 @@ export interface UpdateMemberRoleResponse {
     updatedAt: string
     user: User
 }
+
+// Bank Account types
+export interface BankAccount {
+    id: string
+    name: string
+    bankCode: string
+    initialBalanceCents?: number
+    agency?: string
+    account?: string
+    workspaceId: string
+    ownerId: string
+    createdAt: string
+    updatedAt: string
+    owner: User
+}
+
+// Bank Account DTOs
+export interface CreateBankAccountRequest {
+    name: string
+    bankCode: string
+    ownerId?: string
+    initialBalance?: string
+    agency?: string
+    account?: string
+}
+
+export interface UpdateBankAccountRequest {
+    name?: string
+    bankCode?: string
+    ownerId?: string
+    initialBalance?: string
+    agency?: string
+    account?: string
+}
