@@ -156,3 +156,54 @@ export interface UpdateBankAccountRequest {
     agency?: string
     account?: string
 }
+
+// Credit Card types
+export type CardType = 'HOLDER' | 'THIRD_PARTY'
+export type CardBrand = 'VISA' | 'MASTERCARD' | 'ELO' | 'AMEX' | 'HIPERCARD' | 'DINERS'
+
+export interface CreditCard {
+    id: string
+    name: string
+    cardType: CardType
+    brand?: CardBrand
+    holderName?: string
+    lastFourDigits?: string
+    creditLimitCents?: number
+    dueDate: number
+    bankCode?: string
+    workspaceId: string
+    workspaceUserId?: string
+    createdAt: string
+    updatedAt: string
+    owner?: User
+    bankAccount?: {
+        id: string
+        name: string
+        bankCode: string
+    }
+}
+
+// Credit Card DTOs
+export interface CreateCreditCardRequest {
+    name: string
+    cardType: CardType
+    brand?: CardBrand
+    holderName?: string
+    workspaceUserId?: string
+    bankAccountId?: string
+    lastFourDigits?: string
+    creditLimit?: string
+    dueDate: number
+}
+
+export interface UpdateCreditCardRequest {
+    name?: string
+    cardType?: CardType
+    brand?: CardBrand
+    holderName?: string
+    workspaceUserId?: string
+    bankAccountId?: string
+    lastFourDigits?: string
+    creditLimit?: string
+    dueDate?: number
+}
