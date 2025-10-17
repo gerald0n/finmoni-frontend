@@ -1,0 +1,6 @@
+export { VisaIcon } from './visa-icon'
+export { MastercardIcon } from './mastercard-icon'
+export { EloIcon } from './elo-icon'
+export { AmexIcon } from './amex-icon'
+export { HipercardIcon } from './hipercard-icon'
+export { DinersIcon } from './diners-icon'
