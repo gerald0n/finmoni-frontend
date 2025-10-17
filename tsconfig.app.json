@@ -26,7 +26,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     /* Path mapping */
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
