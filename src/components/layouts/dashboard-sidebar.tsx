@@ -17,6 +17,12 @@ const sidebarItems = [
         href: '/bank-accounts',
         description: 'Gerencie suas contas'
     },
+    {
+        title: 'Cartões de Crédito',
+        icon: CreditCard,
+        href: '/credit-cards',
+        description: 'Gerencie seus cartões'
+    },
 ]
 
 export function DashboardSidebar() {
