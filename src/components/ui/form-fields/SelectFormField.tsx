@@ -1,6 +1,8 @@
+import { X } from 'lucide-react'
 import { type ReactNode } from 'react'
 import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
 
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
     Select,
@@ -55,7 +57,7 @@ export function SelectFormField<T extends FieldValues>({
                 )}
 
                 <Select value={field.value || ''} onValueChange={field.onChange}>
-                    <SelectTrigger className={`${icon ? 'pl-10' : ''} ${error ? 'border-red-500' : ''}`}>
+                    <SelectTrigger className={`${icon ? 'pl-10' : ''} ${!required && field.value ? 'pr-10' : ''} ${error ? 'border-red-500' : ''}`}>
                         <SelectValue placeholder={placeholder} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60 w-[var(--radix-select-trigger-width)]">
@@ -77,6 +79,21 @@ export function SelectFormField<T extends FieldValues>({
                         ))}
                     </SelectContent>
                 </Select>
+
+                {!required && field.value && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-muted z-10"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            field.onChange('')
+                        }}
+                    >
+                        <X className="h-3 w-3" />
+                    </Button>
+                )}
             </div>
 
             {description && (
