@@ -1,7 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Building, CreditCard, User } from 'lucide-react'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,15 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { TextFormField, SelectFormField } from '@/components/ui/form-fields'
+import { SelectFormField, TextFormField } from '@/components/ui/form-fields'
+import { useBankAccountForm } from '@/hooks/use-bank-account-form'
 import { useBanksQuery } from '@/hooks/use-banks'
-import {
-  useCreateAccountMutation,
-  useUpdateAccountMutation,
-  useWorkspaceMembersQuery
-} from '@/services/accounts/hooks'
-import { accountsUtils } from '@/services/accounts/index'
-import { bankAccountSchema, type BankAccountFormData } from '@/services/accounts/schemas'
+import { useWorkspaceMembersQuery } from '@/services/accounts/hooks'
 import type { BankAccount, WorkspaceMember } from '@/types'
 
 interface BankAccountModalProps {
@@ -36,51 +28,16 @@ export function BankAccountModal({
   workspaceId,
   account,
 }: BankAccountModalProps) {
-  const isEditing = !!account
-
-  // Hooks para API calls
-  const { data: members = [], isLoading: loadingMembers } = useWorkspaceMembersQuery(workspaceId)
-  const { data: banks = [], isLoading: loadingBanks } = useBanksQuery()
-  const createMutation = useCreateAccountMutation(workspaceId)
-  const updateMutation = useUpdateAccountMutation(workspaceId, account?.id || '')
-
-  // Setup do formulário com react-hook-form e zod
-  const form = useForm<BankAccountFormData>({
-    resolver: zodResolver(bankAccountSchema),
-    defaultValues: {
-      name: '',
-      bankCode: '',
-      ownerId: '',
-      initialBalance: '',
-      agency: '',
-      account: '',
-    },
+  const { form, isEditing, isLoading, onSubmit } = useBankAccountForm({
+    workspaceId,
+    account,
+    onSuccess: () => onOpenChange(false),
   })
 
-  // Carregar dados da conta para edição
-  useEffect(() => {
-    if (account) {
-      form.reset({
-        name: account.name,
-        bankCode: account.bankCode || '',
-        ownerId: account.ownerId || '',
-        initialBalance: account.initialBalanceCents
-          ? accountsUtils.centsToCurrency(account.initialBalanceCents)
-          : '',
-        agency: account.agency || '',
-        account: account.account || '',
-      })
-    } else {
-      form.reset({
-        name: '',
-        bankCode: '',
-        ownerId: '',
-        initialBalance: '',
-        agency: '',
-        account: '',
-      })
-    }
-  }, [account, form])
+  // Hooks para buscar dados para os selects
+  const { data: members = [], isLoading: loadingMembers } =
+    useWorkspaceMembersQuery(workspaceId)
+  const { data: banks = [], isLoading: loadingBanks } = useBanksQuery()
 
   // Preparar opções do select de membros
   const memberOptions = [
@@ -91,44 +48,13 @@ export function BankAccountModal({
         label: member.user?.name || 'Usuário sem nome',
         ...(member.user?.email && { sublabel: member.user.email }),
         disabled: false,
-      }))
-    ),
+      }))),
   ]
-
-  // Handler do submit
-  const onSubmit = (data: BankAccountFormData) => {
-    const submitData = {
-      name: data.name,
-      bankCode: data.bankCode,
-      ...(data.ownerId && { ownerId: data.ownerId }),
-      ...(data.initialBalance && { initialBalance: data.initialBalance }),
-      ...(data.agency && { agency: data.agency }),
-      ...(data.account && { account: data.account }),
-    }
-
-    if (isEditing) {
-      updateMutation.mutate(submitData, {
-        onSuccess: () => {
-          onOpenChange(false)
-          form.reset()
-        },
-      })
-    } else {
-      createMutation.mutate(submitData, {
-        onSuccess: () => {
-          onOpenChange(false)
-          form.reset()
-        },
-      })
-    }
-  }
 
   const handleClose = () => {
     onOpenChange(false)
     form.reset()
   }
-
-  const isLoading = createMutation.isPending || updateMutation.isPending
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -211,7 +137,9 @@ export function BankAccountModal({
               Cancelar
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading && <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />}
+              {isLoading && (
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-foreground" />
+              )}
               {isEditing ? 'Atualizar' : 'Criar'} Conta
             </Button>
           </DialogFooter>
