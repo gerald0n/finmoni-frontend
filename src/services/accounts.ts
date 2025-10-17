@@ -41,7 +41,6 @@ class AccountsServiceClass {
       )
     }
 
-    // Para DELETE que retorna 204 No Content
     if (response.status === 204) {
       return {} as T
     }
@@ -49,21 +48,18 @@ class AccountsServiceClass {
     return response.json()
   }
 
-  // Listar contas bancárias do workspace
   async list(workspaceId: string): Promise<BankAccount[]> {
     return this.makeRequest<BankAccount[]>(
       `/workspaces/${workspaceId}/accounts`,
     )
   }
 
-  // Obter detalhes de uma conta bancária
   async getById(workspaceId: string, accountId: string): Promise<BankAccount> {
     return this.makeRequest<BankAccount>(
       `/workspaces/${workspaceId}/accounts/${accountId}`,
     )
   }
 
-  // Criar nova conta bancária
   async create(
     workspaceId: string,
     data: CreateBankAccountRequest,
@@ -75,7 +71,6 @@ class AccountsServiceClass {
     )
   }
 
-  // Atualizar conta bancária
   async update(
     workspaceId: string,
     accountId: string,
@@ -88,7 +83,6 @@ class AccountsServiceClass {
     )
   }
 
-  // Deletar conta bancária
   async delete(workspaceId: string, accountId: string): Promise<void> {
     return this.makeRequest<void>(
       `/workspaces/${workspaceId}/accounts/${accountId}`,
@@ -96,14 +90,12 @@ class AccountsServiceClass {
     )
   }
 
-  // Listar membros do workspace (para popular o select de proprietários)
   async getWorkspaceMembers(workspaceId: string): Promise<WorkspaceMember[]> {
     return this.makeRequest<WorkspaceMember[]>(
       `/workspaces/${workspaceId}/members`,
     )
   }
 
-  // Utility function para converter centavos para valor decimal
   static centsToCurrency(cents?: number): string {
     if (cents === null || cents === undefined) return '0,00'
     return (cents / 100).toLocaleString('pt-BR', {
@@ -112,7 +104,6 @@ class AccountsServiceClass {
     })
   }
 
-  // Utility function para converter valor decimal para centavos
   static currencyToCents(value: string): number {
     const normalized = value.trim().replace(',', '.')
     const numberValue = parseFloat(normalized)

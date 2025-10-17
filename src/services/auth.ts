@@ -62,19 +62,16 @@ class AuthServiceClass {
     return !!this.getToken()
   }
 
-  // Decodificar JWT para extrair dados do usuário
   decodeToken(): { sub: string; email: string; name?: string } | null {
     const token = this.getToken()
     if (!token) return null
 
     try {
-      // Decodificar JWT (assumindo formato padrão)
       const parts = token.split('.')
       if (parts.length !== 3 || !parts[1]) return null
 
       const payload = JSON.parse(atob(parts[1]))
 
-      // Extrair nome real do usuário do payload
       const fullName =
         payload.name ||
         payload.displayName ||
