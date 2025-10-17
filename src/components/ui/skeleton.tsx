@@ -74,6 +74,64 @@ function BankAccountsListSkeleton() {
     )
 }
 
+// Skeleton para cartão de crédito individual
+function CreditCardSkeleton() {
+    return (
+        <div className="relative aspect-[1.586/1] w-full max-w-xs rounded-lg p-3 shadow-lg bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 dark:from-slate-700 dark:via-slate-800 dark:to-slate-900 flex flex-col justify-between overflow-hidden text-sm">
+            {/* Padrão de fundo decorativo */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white"></div>
+                <div className="absolute -left-8 -bottom-8 w-24 h-24 rounded-full bg-white"></div>
+            </div>
+
+            {/* Conteúdo do card */}
+            <div className="relative z-10 flex flex-col h-full justify-between">
+                {/* Topo: Número do cartão */}
+                <Skeleton className="h-5 w-48 bg-white/20" />
+
+                {/* Meio: Nome do titular e tipo */}
+                <div className="space-y-1.5">
+                    <Skeleton className="h-3 w-24 bg-white/20" />
+                    <Skeleton className="h-4 w-32 bg-white/20" />
+                    <Skeleton className="h-3 w-16 bg-white/20" />
+                </div>
+
+                {/* Base: Limite, Vencimento */}
+                <div className="flex items-end justify-between">
+                    <div className="flex gap-3">
+                        <div className="space-y-1">
+                            <Skeleton className="h-2.5 w-10 bg-white/20" />
+                            <Skeleton className="h-3 w-12 bg-white/20" />
+                        </div>
+                        <div className="space-y-1">
+                            <Skeleton className="h-2.5 w-10 bg-white/20" />
+                            <Skeleton className="h-3 w-16 bg-white/20" />
+                        </div>
+                    </div>
+                    <Skeleton className="h-6 w-10 bg-white/20" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// Skeleton para lista de cartões de crédito
+function CreditCardsListSkeleton() {
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-10 w-32" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <CreditCardSkeleton key={i} />
+                ))}
+            </div>
+        </div>
+    )
+}
+
 // Skeleton para tabela genérica
 function TableSkeleton({
     rows = 5,
@@ -127,6 +185,7 @@ export {
     Skeleton,
     BankAccountCardSkeleton,
     BankAccountsListSkeleton,
+    CreditCardsListSkeleton,
     TableSkeleton,
     DashboardSkeleton
 }
